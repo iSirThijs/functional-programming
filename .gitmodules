@@ -1,1 +1,4 @@
 
+[submodule "git_modules/nmvw-sparql-module"]
+	path = git_modules/nmvw-sparql-module
+	url = git@github.com:iSirThijs/nmvw-sparql-module.git
