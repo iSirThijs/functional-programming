@@ -25,10 +25,9 @@ export function drawCircles(data) {
 		.attr('transform', d => `translate(${d.x},${d.y})`);
 
 
-	console.log(root.leaves());
+	console.log(root);
 
 	bubble.append('circle')
-		.attr('id', d => d.id)
 		.attr('r', d => (d.r))
 		.attr('fill', 'grey')
 		.attr('fill-opacity', 0.7);
