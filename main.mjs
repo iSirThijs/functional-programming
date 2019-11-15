@@ -1,4 +1,5 @@
-import { queryStringUtilities, fetchResults, transformUtilities } from './git_modules/nmvw-sparql-module/nmvw-sparql-module.mjs';
+import { queryStringUtilities, fetchResults, cleaningUtilities, transformUtilities } from './git_modules/nmvw-sparql-module/nmvw-sparql-module.mjs';
+import { drawCircles } from './modules/bubbleChart.mjs';
 
 let url = 'https://api.data.netwerkdigitaalerfgoed.nl/datasets/ivo/NMVW/services/NMVW-37/sparql';
 const prefixes = {
@@ -27,110 +28,9 @@ let queryString = queryStringUtilities.createQueryString(prefixes, selectVars, w
 
 fetchResults(url, queryString)
 	.then((rawData) => transformUtilities.toMap(rawData))
-	.then((data) => cleanCreatorNames(data))
-	.then((objects) => {
-		console.log(objects);
+	.then((creators) => cleaningUtilities.extractTitles(creators))
+	.then((creators) => creators.map((creator) => Object.fromEntries(creator)))
+	.then((creators) => {
+		drawCircles(creators);
+		console.log(creators);
 	});
-
-
-function cleanCreatorNames(creators) {
-
-	return creators.map((creator, index) => {
-
-		let name = creator.get('creator');
-		creator.set('creator', ++index);
-		let gender = determineGender(name);
-
-		creator.set('gender', gender[0]);	
-		let genderLessName = gender[1];
-
-		let titles = personTitle(genderLessName);
-		creator.set('titles', titles[0]);
-		let titleLessName = titles[1];
-
-
-		creator.set('name', titleLessName);
-
-
-		if(creator.get('gender') || creator.get('titles')) creator.set('person', true);
-		else creator.set('person', false);
-
-		return Object.fromEntries(creator);
-
-	});
-}
-
-
-function determineGender(name) {
-	let regex = RegExp(/^([Mm]evr||[Dd]hr)\. ?/);
-	let male = RegExp(/([Dd]hr)/);
-	let female = RegExp(/([Mm]evr.?)|([Mm]w.?)/);
-
-	let genderTitleSplit = name.split(regex);
-
-	let gender = new Set;
-
-	if (genderTitleSplit.length > 1 && male.test(genderTitleSplit[1])) {
-		gender.add('male');
-		gender.add(genderTitleSplit[2]);
-	}
-	
-	if (genderTitleSplit.length > 1 && female.test(genderTitleSplit[1])) {	
-		gender.add('female');
-		gender.add(genderTitleSplit[2]);
-	}
-	
-	if (genderTitleSplit.length == 1 )	{
-		gender.add(undefined);
-		gender.add(genderTitleSplit[0]);
-	}
-
-	return Array.from(gender);
-
-}
-
-
-function personTitle(name) {
-	let prof = RegExp(/^([Pp]rof)\.? ?/);
-	let dr = RegExp(/^([Dd]r)\.? ?/);
-	let drs = RegExp(/^([Dd]rs)\.? ?/);
-	let ir = RegExp(/^([Ii]r)\.? ?/);
-
-	let titles = new Set();
-
-	let profSplit = name.split(prof);
-
-	if(profSplit.length > 1 ) {
-		profSplit.shift(); // removes the empty first value
-		titles.add('Professor'); // add the title to the set
-		name = profSplit[1]; // reassign the name without prof. 
-	}
-
-	let drSplit = name.split(dr);
-
-	if(drSplit.length > 1 ) {
-		drSplit.shift();
-		titles.add('Doctor');
-		name = drSplit[1]
-	}
-
-	let drsSplit = name.split(drs);
-
-	if(drsSplit.length > 1 ) {
-		drsSplit.shift();
-		titles.add('Doctorandus');
-		name = drsSplit[1]
-	}
-
-	let irSplit = name.split(ir);
-
-	if(irSplit.length > 1 ) {
-		irSplit.shift();
-		titles.add('Ingenieur');
-		name = irSplit[1]
-	}
-
-	if (titles.size > 0) return [Array.from(titles), name];
-	else return [undefined, name];
-
-}
