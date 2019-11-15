@@ -1,4 +1,4 @@
-import { queryStringUtilities, fetchResults, cleaningUtilities, transformUtilities } from './git_modules/nmvw-sparql-module/nmvw-sparql-module.mjs';
+import { queryStringUtilities, fetchResults, cleaningUtilities, transformUtilities } from './modules/nmvw-sparql-module/nmvw-sparql-module.mjs';
 import { drawCircles } from './modules/bubbleChart.mjs';
 
 let url = 'https://api.data.netwerkdigitaalerfgoed.nl/datasets/ivo/NMVW/services/NMVW-37/sparql';
