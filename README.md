@@ -11,6 +11,8 @@ The goal for the subject is to create a visualization of data for the National M
 ## Features and concept
 This visualization is about the showing the photographic collection from the NVMW split out on the person who made the photo. The lager the bubble, the more items in the collection are from that creator.
 
+View it here: https://isirthijs.github.io/functional-programming/
+
 The next subject will enhance this with interaction, allowing you to explore these creators and interact with the data(Coming later)
 
 ## Install
