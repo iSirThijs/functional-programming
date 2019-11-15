@@ -19,8 +19,7 @@ const whereQuery = [
 	'?obj dc:creator ?creator .'
 ];
 let queryOptionals = {
-	group: '?creator',
-	order: 'DESC(?creatorCount)'
+	group: '?creator'
 };
 
 let queryString = queryStringUtilities.createQueryString(prefixes, selectVars, whereQuery, queryOptionals);
